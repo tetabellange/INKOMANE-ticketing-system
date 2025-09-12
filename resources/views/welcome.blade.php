@@ -1,137 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>INKOMANE Ticketing System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
-  <style>
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 40px;
-      font-weight: bold;
-      color: #ffddddff;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
 
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 30px;
-      font-weight: normal;
-      color: #ffddddff;
-      opacity: 0;
-      transform: scale(0.8);
-      animation: popIn 1s ease forwards;
-      animation-delay: 4.5s; 
-    }
+        /* Left and Right sides always equal */
+        .left, .right {
+            flex: 1;
+            min-width: 0; /* ensures equal halves */
+        }
 
-    p.get-started {
-      font-family: feof;
-      font-size: 24px;
-      color: #ffddddff;
-      opacity: 0;
-      animation: fadeIn 1s ease forwards;
-      animation-delay: 6s; /* after subtitle */
-      margin-left: 50px; /* slightly shifted right */
-    }
+        /* Left side */
+        .left {
+            background-color: black;
+            display: flex;
+            justify-content: center;  /* horizontal center */
+            align-items: center;      /* vertical center */
+        }
 
-    .buttons {
-      opacity: 0;
-      animation: fadeIn 1s ease forwards;
-      animation-delay: 7s; /* after Get Started */
-      margin-left: 50px;  /* match Get Started */
-    }
+        .logo {
+            max-width: 300px;  /* larger size */
+            width: 60%;        /* responsive scaling */
+            height: auto;      /* keep proportions */
+        }
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      background-image: url('/background.jpeg');
-      background-attachment: fixed;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      display: flex;
-      justify-content: flex-start; 
-      align-items: flex-start;
-      height: 100vh;
-      padding: 80px; 
-    }
+        /* Right side */
+        .right {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .container {
-      max-width: 1000px;
-      background: none;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: none;
-      text-align: left; 
-    }
+        /* Form container */
+        .form-container {
+            width: 350px;
+        }
 
-    h1, h2, p {
-      text-align: left; 
-    }
+        .form-container h2 {
+            margin-bottom: 20px;
+            padding-left: 5px;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
 
-    a {
-      background: #007cba;
-      color: white;
-      padding: 10px 20px;
-      text-decoration: none;
-      margin: 10px 5px 0 0;
-      display: inline-block;
-      border-radius: 5px;
-    }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
 
-    
-    .typing {
-      white-space: nowrap;
-      overflow: hidden;
-      width: 0;
-      border-right: 3px solid #ffddddff; 
-      animation: typing 4s steps(30, end) forwards, blink .75s step-end infinite;
-    }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;       /* bigger input boxes */
+            font-size: 16px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 20px;
+        }
 
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
-    }
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border: 2px solid black;
+        }
 
-    @keyframes blink {
-      50% { border-color: transparent }
-    }
+        .forgot {
+            display: block;
+            text-align: right;
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: blue;
+            text-decoration: none;
+        }
 
-    .typing.done {
-      border-right: none;
-    }
+        .forgot:hover {
+            text-decoration: underline;
+        }
 
-    @keyframes popIn {
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
+        /* Login button */
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-  </style>
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+
+        .register {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .register a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="typing" id="title">Welcome to INKOMANE</h1>
-        <h2>Customer Support & Ticketing System</h2><br>
-        
-        <p class="get-started">Get started:</p>
-        <div class="buttons">
-            <a href="/register">Register</a>
-            <a href="/login">Login</a>
+
+    <!-- Left side with logo -->
+    <div class="left">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
+    </div>
+
+    <!-- Right side with login form -->
+    <div class="right">
+        <div class="form-container">
+            <h2>LOGIN</h2>
+            
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email">
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+            
+            <a href="#" class="forgot">Forgot Password?</a>
+            
+            <!-- Login button (redirect link) -->
+            <a href="/dashboard" class="login-btn">Login</a>
+            
+            <div class="register">
+                Don’t have an account? <a href="/register">Register here</a>
+            </div>
         </div>
     </div>
 
-    <script>
-      // Remove cursor after h1 typing
-      setTimeout(() => {
-        document.getElementById("title").classList.add("done");
-      }, 4000); 
-    </script>
 </body>
 </html>

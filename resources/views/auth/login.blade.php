@@ -1,53 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Login - INKOMANE</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial; margin: 50px; }
-        .form-container { max-width: 400px; margin: 0 auto; }
-        input {
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Split left and right sides */
+        .left, .right {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .left {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left img {
+            max-width: 300px;
+            width: 60%;
+            height: auto;
+        }
+
+        .right {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            width: 350px;
+        }
+
+        h2 {
+            text-transform: uppercase;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #f3d3d3ff; 
-            border-radius: 4px;
-            box-sizing: border-box;
+            padding: 15px;
             font-size: 16px;
+            border: 1px solid transparent;
+            border-radius: 8px;
             outline: none;
-            box-shadow: 0 4px 6px rgba(97, 97, 97, 0.5);
-              }
-        button { background: #007cba; color: white; padding: 12px 20px; border: none; width: 100%; }
-        .error { color: red; font-size: 14px; }
-        .success { color: green; font-size: 14px; }
+            margin-bottom: 20px;
+        }
+
+        input:focus {
+            border: 2px solid black;
+        }
+
+        .forgot {
+            display: block;
+            text-align: right;
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: blue;
+            text-decoration: none;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+
+        .register {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .register a {
+            color: blue;
+            text-decoration: none;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+        /* Error messages */
+        .errors {
+            color: red;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Login to INKOMANE</h2>
-        
-        @if(session('success'))
-            <div class="success">
-                <p>{{ session('success') }}</p>
+    <div class="left">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo">
+    </div>
+
+    <div class="right">
+        <div class="form-container">
+            <h2>Login</h2>
+
+            @if ($errors->any())
+                <div class="errors">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required value="{{ old('email') }}">
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <a href="{{ route('password.request') }}" class="forgot">Forgot Password?</a>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="register">
+                Don’t have an account? <a href="{{ route('register') }}">Register here</a>
             </div>
-        @endif
-
-        @if($errors->any())
-            <div class="error">
-                @foreach($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-            <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-
-        <p><a href="/register">Don't have an account? Register here</a></p>
+        </div>
     </div>
 </body>
 </html>
