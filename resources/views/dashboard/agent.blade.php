@@ -21,7 +21,7 @@
             <!-- Resources -->
             <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-xl font-semibold mb-4">Resources</h2>
-                <a href="/knowledge-base" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">❓ Help & FAQ</a>
+                <a href="{{ route('knowledge-base') }}" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">❓ Help & FAQ</a>
             </div>
         </div>
 

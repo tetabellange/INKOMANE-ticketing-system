@@ -15,7 +15,7 @@
                 <div class="flex flex-wrap gap-4">
                     <a href="{{ route('tickets.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">➕ Create Ticket</a>
                     <a href="{{ route('tickets.index') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">📂 My Tickets</a>
-                    <a href="/knowledge-base" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">❓ Help & FAQ</a>
+                    <a href="{{ route('knowledge-base') }}" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">❓ Help & FAQ</a>
                 </div>
             </div>
 
@@ -23,9 +23,9 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-xl font-semibold mb-4">Gift Shop</h2>
                 <div class="flex flex-wrap gap-4">
-                    <a href="/shop" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">🛍️ Browse Products</a>
-                    <a href="/cart" class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">🛒 My Cart</a>
-                    <a href="/orders" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">📦 My Orders</a>
+                    <a href="{{ route('shop.index') }}" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">🛍️ Browse Products</a>
+                    <a href="{{ route('cart.index') }}" class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">🛒 My Cart</a>
+                    <a href="{{ route('orders.index') }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">📦 My Orders</a>
                 </div>
             </div>
 

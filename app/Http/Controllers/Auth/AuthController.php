@@ -10,41 +10,72 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    // Show login page
-    public function showLogin() {
+    // ----------------------------
+    // Show Login Form
+    // ----------------------------
+    public function showLogin()
+    {
         return view('auth.login');
     }
 
-    // Handle login
-    public function login(Request $request) {
+    // ----------------------------
+    // Login Handler
+    // ----------------------------
+    public function login(Request $request)
+    {
+        // Validate input
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        // Debug: log attempt
+        Log::info('Login attempt for email: ' . $request->email);
 
-            if (Auth::user()->first_login) {
+        // Attempt login
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+
+            // Debug: successful login
+            Log::info('User logged in: ' . $user->email . ' Role: ' . $user->role);
+
+            // First login for customers
+            if ($user->first_login && $user->role === 'customer') {
+                $user->first_login = false; // mark first login complete
+                $user->save();
                 return redirect()->route('welcome_first');
             }
 
-            return redirect()->route('tickets.index');
+            // Redirect to role-based dashboard
+            return $this->redirectToDashboard($user);
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
+        // Failed login
+        Log::warning('Failed login attempt for email: ' . $request->email);
+
+        return back()->withErrors([
+            'email' => 'The provided credentials are incorrect.',
+        ])->withInput();
     }
 
-    // Show registration page
-    public function showRegister() {
+    // ----------------------------
+    // Show Register Form
+    // ----------------------------
+    public function showRegister()
+    {
         return view('auth.register');
     }
 
-    // Handle registration
-    public function register(Request $request) {
+    // ----------------------------
+    // Registration Handler
+    // ----------------------------
+    public function register(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
@@ -55,6 +86,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'customer', // default role
             'first_login' => true,
         ]);
 
@@ -63,30 +95,37 @@ class AuthController extends Controller
         return redirect()->route('welcome_first');
     }
 
-    // Logout
-    public function logout(Request $request) {
+    // ----------------------------
+    // Logout Handler
+    // ----------------------------
+    public function logout(Request $request)
+    {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Logged out successfully.');
+
+        return redirect()->route('login')->with('success', 'You have been logged out successfully.');
     }
 
     // ----------------------------
-    // Forgot / Reset Password Flow
+    // Show Forgot Password Form
     // ----------------------------
-
-    // Show forgot password form
-    public function showForgotPasswordForm() {
+    public function showForgotPasswordForm()
+    {
         return view('auth.forgot-password');
     }
 
-    // Handle sending reset link (simulation)
-    public function sendResetLinkEmail(Request $request) {
+    // ----------------------------
+    // Send Password Reset Link
+    // ----------------------------
+    public function sendResetLinkEmail(Request $request)
+    {
         $request->validate(['email' => 'required|email']);
 
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return back()->withErrors(['email' => 'Email not found']);
+            return back()->withErrors(['email' => 'No account found with that email.']);
         }
 
         $token = Str::random(64);
@@ -96,17 +135,23 @@ class AuthController extends Controller
             ['token' => Hash::make($token), 'created_at' => Carbon::now()]
         );
 
-        // Here you would normally send an email. For now, we just simulate.
-        return back()->with('status', 'Password reset link has been sent to your email (simulation).');
+        // TODO: send email here
+        return back()->with('status', 'Password reset link has been generated (simulation).');
     }
 
-    // Show reset password form
-    public function showResetPasswordForm($token) {
+    // ----------------------------
+    // Show Reset Password Form
+    // ----------------------------
+    public function showResetPasswordForm($token)
+    {
         return view('auth.reset-password', ['token' => $token]);
     }
 
-    // Handle password reset
-    public function resetPassword(Request $request) {
+    // ----------------------------
+    // Reset Password Handler
+    // ----------------------------
+    public function resetPassword(Request $request)
+    {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
@@ -115,15 +160,33 @@ class AuthController extends Controller
 
         $reset = DB::table('password_resets')->where('email', $request->email)->first();
         if (!$reset || !Hash::check($request->token, $reset->token)) {
-            return back()->withErrors(['email' => 'Invalid or expired token']);
+            return back()->withErrors(['email' => 'Invalid or expired token.']);
         }
 
         $user = User::where('email', $request->email)->first();
-        $user->password = Hash::make($request->password);
-        $user->save();
+        if ($user) {
+            $user->password = Hash::make($request->password);
+            $user->save();
+        }
 
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        return redirect()->route('login')->with('success', 'Password reset successfully. You can now login.');
+        return redirect()->route('login')->with('success', 'Your password has been reset. Please login.');
+    }
+
+    // ----------------------------
+    // Role-based dashboard redirect helper
+    // ----------------------------
+    protected function redirectToDashboard(User $user)
+    {
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            case 'agent':
+                return redirect()->route('agent.dashboard');
+            case 'customer':
+            default:
+                return redirect()->route('customer.dashboard');
+        }
     }
 }
