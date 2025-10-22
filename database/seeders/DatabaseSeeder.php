@@ -32,5 +32,10 @@ class DatabaseSeeder extends Seeder
         User::factory(20)->create([
             'role' => 'customer',
         ]);
+
+        // Seed products
+        $this->call([
+            \Database\Seeders\ProductSeeder::class,
+        ]);
     }
 }

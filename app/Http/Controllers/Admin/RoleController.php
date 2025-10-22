@@ -11,6 +11,6 @@ class RoleController extends Controller
     public function index()
     {
         $roles = ['admin', 'agent', 'customer']; // static for now
-        return view('admin.roles.index', compact('roles'));
+        return view('admin.roles', compact('roles'));
     }
 }

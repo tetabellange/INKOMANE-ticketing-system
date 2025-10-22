@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Agent;
 
+use App\Http\Controllers\Controller; // ✅ Import base Controller
 use App\Models\Ticket;
 use App\Models\TicketComment;
 use Illuminate\Http\Request;
@@ -11,19 +12,34 @@ use Illuminate\Support\Facades\Mail;
 
 class AgentTicketController extends Controller
 {
-    public function index() {
-        // Show tickets assigned to the logged-in agent
-        $tickets = Ticket::where('agent_id', auth()->id())->latest()->paginate(10);
+    /**
+     * Display a list of tickets assigned to the logged-in agent.
+     */
+    public function index()
+    {
+        $tickets = Ticket::where('agent_id', auth()->id())
+                         ->latest()
+                         ->paginate(10);
+
         return view('agent.tickets.index', compact('tickets'));
     }
 
-    public function show(Ticket $ticket) {
+    /**
+     * Show a single ticket with comments.
+     */
+    public function show(Ticket $ticket)
+    {
         $this->authorize('view', $ticket);
         $ticket->load('comments.user');
+
         return view('agent.tickets.show', compact('ticket'));
     }
 
-    public function updateStatus(Request $request, Ticket $ticket) {
+    /**
+     * Update ticket status.
+     */
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
         $this->authorize('update', $ticket);
 
         $data = $request->validate([
@@ -32,14 +48,17 @@ class AgentTicketController extends Controller
 
         $ticket->update(['status' => $data['status']]);
 
-        // -------- EMAILS ----------
+        // Notify customer via email
         Mail::to($ticket->user->email)->queue(new TicketStatusUpdated($ticket));
-        // --------------------------
 
         return back()->with('ok', 'Ticket status updated.');
     }
 
-    public function addInternalNote(Request $request, Ticket $ticket) {
+    /**
+     * Add an internal note to a ticket.
+     */
+    public function addInternalNote(Request $request, Ticket $ticket)
+    {
         $this->authorize('update', $ticket);
 
         $data = $request->validate([
@@ -47,16 +66,14 @@ class AgentTicketController extends Controller
         ]);
 
         $comment = TicketComment::create([
-            'ticket_id' => $ticket->id,
-            'user_id' => auth()->id(),
-            'comment' => $data['comment'],
-            'is_internal' => true,
+            'ticket_id'  => $ticket->id,
+            'user_id'    => auth()->id(),
+            'comment'    => $data['comment'],
+            'is_internal'=> true,
         ]);
 
-        // -------- EMAILS ----------
-        // Notify customer about update
+        // Notify customer about the internal note (optional)
         Mail::to($ticket->user->email)->queue(new TicketCommentAdded($ticket, $comment));
-        // --------------------------
 
         return back()->with('ok', 'Internal note added.');
     }

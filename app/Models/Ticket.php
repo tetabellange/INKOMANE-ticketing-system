@@ -27,6 +27,16 @@ class Ticket extends Model
     ];
 
     /**
+     * Default attribute values.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'open', // default status
+        'priority' => 'medium', // default priority
+    ];
+
+    /**
      * Get the customer who created the ticket.
      *
      * @return BelongsTo
@@ -74,5 +84,28 @@ class Ticket extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(TicketAttachment::class);
+    }
+
+    /**
+     * Scope to filter only open tickets.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOpen($query)
+    {
+        return $query->where('status', 'open');
+    }
+
+    /**
+     * Scope to filter tickets by priority.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $priority
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePriority($query, string $priority)
+    {
+        return $query->where('priority', $priority);
     }
 }
